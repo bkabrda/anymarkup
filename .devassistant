@@ -1,0 +1,16 @@
+dependencies:
+- rpm:
+  - python${py3}
+- if $venv:
+  - rpm:
+    - python-virtualenv
+- else:
+  - rpm:
+    - python-setuptools
+devassistant_version: 0.10.3
+original_kwargs:
+  name: anymarkup
+  venv: ''
+project_type:
+- python
+- lib
