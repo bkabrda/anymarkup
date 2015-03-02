@@ -11,6 +11,7 @@ setup(
     keywords='xml, yaml, json, ini',
     author='Slavek Kabrda',
     author_email='slavek.kabrda@gmail.com',
+    url='https://github.com/bkabrda/anymarkup',
     license='BSD',
     packages=['anymarkup'],
     install_requires=open('requirements.txt').read().splitlines(),
