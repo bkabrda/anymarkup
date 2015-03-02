@@ -9,7 +9,7 @@ Parsing::
 
   ini = """
   [a]
-  foo = bar""
+  foo = bar"""
 
   json = """
   {"a": {
