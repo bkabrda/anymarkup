@@ -121,11 +121,21 @@ class TestParse(object):
         assert parsed == expected
         self.assert_unicode(parsed)
 
-    def test_parse_fails_with_unicode_yielding_file(self):
+    def test_parse_works_with_bytes_yielding_file(self):
+        # on Python 2, this can only be simulated with io.open
+        f = open(os.path.join(self.fixtures, 'empty.ini'), 'rb')
+        parsed = parse(f)
+        assert parsed == {}
+
+    def test_parse_works_with_unicode_yielding_file(self):
         # on Python 2, this can only be simulated with io.open
         f = io.open(os.path.join(self.fixtures, 'empty.ini'), encoding='utf-8')
+        parsed = parse(f)
+        assert parsed == {}
+
+    def test_parse_fails_on_wrong_format(self):
         with pytest.raises(AnyMarkupError):
-            parse(f)
+            parse('foo: bar', format='xml')
 
     @pytest.mark.parametrize('file, expected', [
         # TODO: some parsers allow empty files, others don't - this should be made consistent
@@ -148,7 +158,11 @@ class TestParse(object):
             assert parsed == expected
             self.assert_unicode(parsed)
 
-    def test_parsefile_noextension(self):
-        parsed = parse(open(os.path.join(self.fixtures, 'without_extension'), 'rb'), format='ini')
+    def test_parse_file_noextension(self):
+        parsed = parse_file(os.path.join(self.fixtures, 'without_extension'))
         assert parsed == example_ini_as_struct
         self.assert_unicode(parsed)
+
+    def test_parse_file_fails_on_bad_extension(self):
+        with pytest.raises(AnyMarkupError):
+            parse_file(os.path.join(self.fixtures, 'bad_extension.xml'))

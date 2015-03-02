@@ -38,7 +38,7 @@ def parse(inp, format=None, encoding='utf-8'):
     """Parse input from file-like object, unicode string or byte string.
 
     Args:
-        inp: bytes yielding file-like object, unicode string or byte string with the markup
+        inp: file-like object, unicode string or byte string with the markup
         format: explicitly override the guessed `inp` markup format
         encoding: `inp` encoding, defaults to utf-8
     Returns:
@@ -46,26 +46,24 @@ def parse(inp, format=None, encoding='utf-8'):
     Raises:
         AnyMarkupError if a problem occurs while parsing or inp 
     """
-    # if we got unicode, encode it
-    if isinstance(inp, six.text_type):
-        inp = inp.encode(encoding)
+    proper_inp = inp
+    if hasattr(inp, 'read'):
+        proper_inp = inp.read()
+    # if proper_inp is unicode, encode it
+    if isinstance(proper_inp, six.text_type):
+        proper_inp = proper_inp.encode(encoding)
+
     # try to guess markup type
-    fmt = _get_format(inp, format)
+    fname = None
+    if hasattr(inp, 'name'):
+        fname = inp.name
+    fmt = _get_format(proper_inp, format, fname)
 
-    # make it look like file-like object in two cases if it's encoded string
-    if isinstance(inp, six.binary_type):
-        inp = six.BytesIO(inp)
-    # and also if it's a file-like object opened with attribute encoding
-    elif hasattr(inp, 'encoding') and inp.encoding:
-        raise AnyMarkupError('need file object opened in binary mode')
-
-    # if it's not file-like object, raise
-    if not hasattr(inp, 'read'):
-        raise AnyMarkupError('need byte string, unicode string or file-like object, got {0}'.
-            format(type(inp)))
+    # make it look like file-like bytes-yielding object
+    proper_inp = six.BytesIO(proper_inp)
 
     try:
-        res = _do_parse(inp, fmt, encoding)
+        res = _do_parse(proper_inp, fmt, encoding)
     except Exception as e:
         # I wish there was only Python 3 and I could just use "raise ... from e"
         raise AnyMarkupError(e)
@@ -164,12 +162,13 @@ def _ensure_unicode_recursive(struct, encoding):
     return res
 
 
-def _get_format(inp, format):
+def _get_format(inp, format, fname):
     """Try to guess markup format of given input.
 
     Args:
-        inp: input to guess format of
+        inp: bytestring to guess format of
         format: explicit format override to use
+        fname: name of file, if a file was used to read `inp`
     Returns:
         guessed format (a key of fmt_to_exts dict)
     Raises:
@@ -184,22 +183,16 @@ def _get_format(inp, format):
             fmt = format
         else:
             err = 'unknown format "{0}"'.format(format)
-    elif hasattr(inp, 'read') and hasattr(inp, 'name'):  # seems to be a file object
+    elif fname:
         # get file extension without leading dot
-        file_ext = os.path.splitext(inp.name)[1][len(os.path.extsep):]
+        file_ext = os.path.splitext(fname)[1][len(os.path.extsep):]
         for fmt_name, exts in fmt_to_exts.items():
             if file_ext in exts:
                 fmt = fmt_name
-        if fmt is None:
-            # TODO: try guessing based on file contents and then rewind the file?
-            err = 'can\'t guess markup type based on file extension "{0}"'.format(file_ext)
-    # TODO: stringio has "read", but no "name" - what to do with it?
-    elif isinstance(inp, six.binary_type):
+    if fmt is None:
         fmt = _guess_fmt_from_bytes(inp)
         if fmt is None: 
             err = 'failed to guess markup type from string'
-    else:
-        err = 'can\'t guess markup type from type "{0}"'.format(type(inp))
 
     if err is not None:
         raise AnyMarkupError(err)
