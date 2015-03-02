@@ -1,3 +1,4 @@
+configobj
 PyYAML
 six
 xmltodict
