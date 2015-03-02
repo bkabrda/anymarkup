@@ -1,9 +1,21 @@
 anymarkup
 =========
 
-Parse or serialize any markup.
+Parse or serialize any markup. Currently supports ini, json, xml and yaml.
+Report bugs and new functionality requests at https://github.com/bkabrda/anymarkup/issues.
 
-Parsing::
+Parsing (see below for more examples)::
+
+  import anymarkup
+  anymarkup.parse('foo: bar')
+  anymarkup.parse_file('foo/bar.ini')
+
+Serializing: coming in next version
+
+Examples
+--------
+
+Parsing examples::
 
   import anymarkup
 
@@ -43,5 +55,3 @@ Parsing::
 
   # you can also pass encoding explicitly (utf-8 is default)
   anymarkup.parse_file('bar', format='xml', encoding='ascii')
-
-Serializing: TODO
