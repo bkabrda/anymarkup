@@ -10,7 +10,7 @@ import xmltodict
 import yaml
 
 
-__all__ = ['AnyMarkupError', 'parse', 'parse_file']
+__all__ = ['AnyMarkupError', 'parse', 'parse_file', 'serialize', 'serialize_to']
 __version__ = '0.1.1'
 
 
@@ -91,6 +91,62 @@ def parse_file(path, format=None, encoding='utf-8'):
         raise AnyMarkupError(e)
 
 
+def serialize(struct, format, target=None, encoding='utf-8'):
+    """Serialize given structure and return it as encoded string or write it to file-like object.
+
+    Args:
+        struct: structure (dict or list) with unicode members to serialize; note that list
+            can only be serialized to json
+        format: specify markup format to serialize structure as
+        target: binary-opened file-like object to serialize to; if None (default),
+            the result will be returned instead of writing to `target`
+        encoding: encoding to use when serializing, defaults to utf-8
+    Returns:
+        bytestring with serialized structure if `target` is None; return value of
+        `target.write` otherwise
+    Raises:
+        AnyMarkupError if a problem occurs while serializing
+    """
+    # raise if "unicode-opened"
+    if hasattr(target, 'encoding') and target.encoding:
+        raise AnyMarkupError('Input file must be opened in binary mode')
+
+    fname = None
+    if hasattr(target, 'name'):
+        fname = target.name
+
+    fmt = _get_format(format, fname)
+    serialized = _do_serialize(struct, fmt, encoding)
+    try:
+        if target is None:
+            return serialized
+        else:
+            return target.write(serialized)
+    except Exception as e:
+        raise AnyMarkupError(e)
+
+
+def serialize_to(struct, path, format=None, encoding='utf-8'):
+    """A convenience wrapper of serialize, which accepts path of file to serialize to.
+
+    Args:
+        struct: structure (dict or list) with unicode members to serialize; note that list
+            can only be serialized to json
+        path: path of the file to serialize to
+        format: override markup format to serialize structure as (taken from filename
+            by default)
+        encoding: encoding to use when serializing, defaults to utf-8
+    Returns:
+        number of bytes written
+    Raises:
+        AnyMarkupError if a problem occurs while serializing
+    """
+    try:
+        return serialize(struct, format, open(path, 'wb'), encoding)
+    except EnvironmentError as e:
+        raise AnyMarkupError(e)
+
+
 def _do_parse(inp, fmt, encoding):
     """Actually parse input.
 
@@ -124,6 +180,42 @@ def _do_parse(inp, fmt, encoding):
         res = yaml.load(inp)
         if six.PY2:
             res = _ensure_unicode_recursive(res, encoding)
+    else:
+        raise  # unknown format
+
+    return res
+
+
+def _do_serialize(struct, fmt, encoding):
+    """Actually serialize input.
+
+    Args:
+        struct: structure to serialize to
+        fmt: format to serialize to
+        encoding: encoding to use while serializing
+    Returns:
+        encoded serialized structure
+    Raises:
+        various sorts of errors raised by libraries while serializing
+    """
+    res = None
+
+    if fmt == 'ini':
+        config = configobj.ConfigObj(encoding=encoding)
+        for k, v in struct.items():
+            config[k] = v
+        res = b'\n'.join(config.write())
+    elif fmt == 'json':
+        # specify separators to get rid of trailing whitespace
+        # specify ensure_ascii to make sure unicode is serialized in \x... sequences,
+        #  not in \u sequences
+        res = json.dumps(struct, indent=2, separators=(',', ': '), ensure_ascii=False).\
+                encode(encoding)
+    elif fmt == 'xml':
+        # passing encoding argument doesn't encode, just sets the xml property
+        res = xmltodict.unparse(struct, pretty=True, encoding='utf-8').encode('utf-8')
+    elif fmt == 'yaml':
+        res = yaml.dump(struct, encoding='utf-8', default_flow_style=False)
     else:
         raise  # unknown format
 

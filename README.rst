@@ -4,13 +4,18 @@ anymarkup
 Parse or serialize any markup. Currently supports ini, json, xml and yaml.
 Report bugs and new functionality requests at https://github.com/bkabrda/anymarkup/issues.
 
-Parsing (see below for more examples)::
+Parsing::
 
   import anymarkup
   anymarkup.parse('foo: bar')
   anymarkup.parse_file('foo/bar.ini')
 
-Serializing: coming in next version
+Serializing (coming soon in 0.2.0)::
+
+  import anymarkup
+  anymarkup.serialize({'foo': 'bar'}, 'json')
+  anymarkup.serialize_to({'foo': 'bar'}, 'path/to/file.json')
+
 
 Examples
 --------
@@ -55,3 +60,26 @@ Parsing examples::
 
   # you can also pass encoding explicitly (utf-8 is default)
   anymarkup.parse_file('bar', format='xml', encoding='ascii')
+
+
+Serializing examples::
+
+  import anymarkup
+
+  struct = {'a': ['b', 'c']}
+
+  for fmt in ['ini', 'json', 'xml', 'yaml']:
+      # any of the above formats can be used for serializing
+      anymarkup.serialize(struct, fmt)
+
+  # explicitly specify encoding (utf-8 is default)
+  anymarkup.serialize(struct, 'json', encoding='utf-8')
+
+  # or serialize directly to a file
+  anymarkup.serialize_to(struct, 'foo/bar.ini')
+
+  # if a file doesn't have a format extension, pass it explicitly
+  anymarkup.serialize_to(struct, 'foo/bar', format='json')
+
+  # you can also pass encoding explicitly (utf-8 is default)
+  anymarkup.serialize_to(struct, 'foo/bar', format='json', encoding='ascii')
