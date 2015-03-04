@@ -44,7 +44,7 @@ def parse(inp, format=None, encoding='utf-8'):
     Returns:
         parsed input (dict or list) containing unicode values
     Raises:
-        AnyMarkupError if a problem occurs while parsing or inp 
+        AnyMarkupError if a problem occurs while parsing or inp
     """
     proper_inp = inp
     if hasattr(inp, 'read'):
@@ -57,7 +57,7 @@ def parse(inp, format=None, encoding='utf-8'):
     fname = None
     if hasattr(inp, 'name'):
         fname = inp.name
-    fmt = _get_format(proper_inp, format, fname)
+    fmt = _get_format(format, fname, proper_inp)
 
     # make it look like file-like bytes-yielding object
     proper_inp = six.BytesIO(proper_inp)
@@ -162,13 +162,14 @@ def _ensure_unicode_recursive(struct, encoding):
     return res
 
 
-def _get_format(inp, format, fname):
+def _get_format(format, fname, inp=None):
     """Try to guess markup format of given input.
 
     Args:
-        inp: bytestring to guess format of
         format: explicit format override to use
         fname: name of file, if a file was used to read `inp`
+        inp: optional bytestring to guess format of (can be None, if markup
+            format is to be guessed only from `format` and `fname`)
     Returns:
         guessed format (a key of fmt_to_exts dict)
     Raises:
@@ -176,26 +177,36 @@ def _get_format(inp, format, fname):
             or if it's impossible to guess the format
     """
     fmt = None
-    err = None
+    err = True
 
     if format is not None:
         if format in fmt_to_exts:
             fmt = format
-        else:
-            err = 'unknown format "{0}"'.format(format)
+            err = False
     elif fname:
         # get file extension without leading dot
         file_ext = os.path.splitext(fname)[1][len(os.path.extsep):]
         for fmt_name, exts in fmt_to_exts.items():
             if file_ext in exts:
                 fmt = fmt_name
-    if fmt is None:
-        fmt = _guess_fmt_from_bytes(inp)
-        if fmt is None: 
-            err = 'failed to guess markup type from string'
+                err = False
 
-    if err is not None:
-        raise AnyMarkupError(err)
+    if fmt is None:
+        if inp is not None:
+            fmt = _guess_fmt_from_bytes(inp)
+            err = False
+
+    if err:
+        err_string = 'Failed to guess markup format based on: '
+        what = []
+        for k, v in {format: 'specified format argument',
+                     fname: 'filename', inp: 'input string'}.items():
+            if k:
+                what.append(v)
+        if not what:
+            what.append('nothing to guess format from!')
+        err_string += ', '.join(what)
+        raise AnyMarkupError(err_string)
 
     return fmt
 
