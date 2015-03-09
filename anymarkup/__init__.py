@@ -177,7 +177,7 @@ def _do_parse(inp, fmt, encoding):
     elif fmt == 'yaml':
         # guesses encoding by its own, there seems to be no way to pass
         #  it explicitly
-        res = yaml.load(inp)
+        res = yaml.safe_load(inp)
         if six.PY2:
             res = _ensure_unicode_recursive(res, encoding)
     else:
@@ -215,7 +215,7 @@ def _do_serialize(struct, fmt, encoding):
         # passing encoding argument doesn't encode, just sets the xml property
         res = xmltodict.unparse(struct, pretty=True, encoding='utf-8').encode('utf-8')
     elif fmt == 'yaml':
-        res = yaml.dump(struct, encoding='utf-8', default_flow_style=False)
+        res = yaml.safe_dump(struct, encoding='utf-8', default_flow_style=False)
     else:
         raise  # unknown format
 
