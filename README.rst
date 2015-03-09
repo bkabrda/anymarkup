@@ -14,7 +14,7 @@ Serializing (coming soon in 0.2.0)::
 
   import anymarkup
   anymarkup.serialize({'foo': 'bar'}, 'json')
-  anymarkup.serialize_to({'foo': 'bar'}, 'path/to/file.json')
+  anymarkup.serialize_file({'foo': 'bar'}, 'path/to/file.json')
 
 
 Examples
@@ -76,10 +76,10 @@ Serializing examples::
   anymarkup.serialize(struct, 'json', encoding='utf-8')
 
   # or serialize directly to a file
-  anymarkup.serialize_to(struct, 'foo/bar.ini')
+  anymarkup.serialize_file(struct, 'foo/bar.ini')
 
   # if a file doesn't have a format extension, pass it explicitly
-  anymarkup.serialize_to(struct, 'foo/bar', format='json')
+  anymarkup.serialize_file(struct, 'foo/bar', format='json')
 
   # you can also pass encoding explicitly (utf-8 is default)
-  anymarkup.serialize_to(struct, 'foo/bar', format='json', encoding='ascii')
+  anymarkup.serialize_file(struct, 'foo/bar', format='json', encoding='ascii')

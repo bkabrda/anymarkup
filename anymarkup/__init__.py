@@ -10,7 +10,7 @@ import xmltodict
 import yaml
 
 
-__all__ = ['AnyMarkupError', 'parse', 'parse_file', 'serialize', 'serialize_to']
+__all__ = ['AnyMarkupError', 'parse', 'parse_file', 'serialize', 'serialize_file']
 __version__ = '0.1.1'
 
 
@@ -126,7 +126,7 @@ def serialize(struct, format, target=None, encoding='utf-8'):
         raise AnyMarkupError(e)
 
 
-def serialize_to(struct, path, format=None, encoding='utf-8'):
+def serialize_file(struct, path, format=None, encoding='utf-8'):
     """A convenience wrapper of serialize, which accepts path of file to serialize to.
 
     Args:

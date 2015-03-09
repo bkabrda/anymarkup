@@ -51,12 +51,12 @@ class TestSerialize(object):
         # TODO: OrderedDict/PyYAML
         #(example_as_struct, 'example.yaml', example_yaml),
     ])
-    def test_serialize_to_basic(self, struct, fname, expected, tmpdir):
+    def test_serialize_file_basic(self, struct, fname, expected, tmpdir):
         f = os.path.join(str(tmpdir), fname)
-        serialize_to(struct, f)
+        serialize_file(struct, f)
         assert self._read_decode(f) == expected
 
-    def test_serialize_to_format_overrides_extension(self, tmpdir):
+    def test_serialize_file_format_overrides_extension(self, tmpdir):
         f = os.path.join(str(tmpdir), 'foo.ini')
-        serialize_to(example_as_struct, f, 'json')
+        serialize_file(example_as_struct, f, 'json')
         assert self._read_decode(f) == example_json
