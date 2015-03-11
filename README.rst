@@ -10,7 +10,7 @@ Parsing::
   anymarkup.parse('foo: bar')
   anymarkup.parse_file('foo/bar.ini')
 
-Serializing (coming soon in 0.2.0)::
+Serializing::
 
   import anymarkup
   anymarkup.serialize({'foo': 'bar'}, 'json')
