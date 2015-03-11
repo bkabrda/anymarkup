@@ -16,7 +16,7 @@ Serializing (coming soon in 0.2.0)::
   anymarkup.serialize({'foo': 'bar'}, 'json')
   anymarkup.serialize_file({'foo': 'bar'}, 'path/to/file.json')
 
-``anymarkup`` is licensed under BSD license. You can get download official releases
+``anymarkup`` is licensed under BSD license. You can download official releases
 from https://pypi.python.org/pypi/anymarkup or install them via ``pip install anymarkup``.
 
 
