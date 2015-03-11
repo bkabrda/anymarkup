@@ -9,6 +9,7 @@ from anymarkup import *
 
 from test import *
 
+
 class TestParse(object):
     fixtures = os.path.join(os.path.dirname(__file__), 'fixtures')
 
@@ -20,7 +21,8 @@ class TestParse(object):
         elif isinstance(struct, list):
             for i in struct:
                 self.assert_unicode(i)
-        elif isinstance(struct, (six.string_types, type(None), type(True))):
+        elif isinstance(struct, (six.string_types, type(None), type(True), \
+                six.integer_types, float)):
             pass
         else:
             raise AssertionError('Unexpected type {0} in parsed structure'.format(type(struct)))
@@ -29,7 +31,7 @@ class TestParse(object):
         ('', {}),
         ('{}', {}),
         ('[]', []),
-        (example_ini, example_ini_as_dict),
+        (example_ini, example_as_dict),
         (example_json, example_as_dict),
         (example_xml, example_as_ordered_dict),
         (example_yaml_map, example_as_dict),
@@ -44,7 +46,7 @@ class TestParse(object):
     @pytest.mark.parametrize('str, expected', [
         ('# comment', {}),
         ('# comment\n', {}),
-        ('# comment\n' + example_ini, example_ini_as_dict),
+        ('# comment\n' + example_ini, example_as_dict),
         ('# comment\n' + example_json, example_as_dict),
         ('# comment\n' + example_yaml_map, example_as_dict),
         ('# comment\n' + example_yaml_omap, example_as_ordered_dict),
@@ -54,6 +56,24 @@ class TestParse(object):
         assert parsed == expected
         assert type(parsed) == type(expected)
         self.assert_unicode(parsed)
+
+    @pytest.mark.parametrize('str', [
+        types_ini,
+        types_json,
+        types_xml,
+        types_yaml,
+    ])
+    def test_parse_force_types(self, str):
+        assert parse(str) == types_as_struct_with_objects
+
+    @pytest.mark.parametrize('str', [
+        types_ini,
+        types_json,
+        types_xml,
+        types_yaml,
+    ])
+    def test_parse_force_strings(self, str):
+        assert parse(str, force_types=False) == types_as_struct_with_strings
 
     def test_parse_works_with_bytes_yielding_file(self):
         f = open(os.path.join(self.fixtures, 'empty.ini'), 'rb')
@@ -76,7 +96,7 @@ class TestParse(object):
         ('empty.json', AnyMarkupError),
         ('empty.xml', AnyMarkupError),
         ('empty.yaml', {}),
-        ('example.ini', example_ini_as_dict),
+        ('example.ini', example_as_dict),
         ('example.json', example_as_dict),
         ('example.xml', example_as_ordered_dict),
         ('example.yaml', example_as_dict),
@@ -93,7 +113,7 @@ class TestParse(object):
 
     def test_parse_file_noextension(self):
         parsed = parse_file(os.path.join(self.fixtures, 'without_extension'))
-        assert parsed == example_ini_as_dict
+        assert parsed == example_as_dict
         self.assert_unicode(parsed)
 
     def test_parse_file_fails_on_bad_extension(self):

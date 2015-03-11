@@ -1,8 +1,9 @@
 {"foo": {
     "bar": "ěšč",
-    "spam": "text2",
+    "spam": 1,
+    "baz": 1.1,
     "blah": {
-        "blahblah": ["text3", "text4"],
+        "blahblah": [true, "text4"],
         "nothing": null
     }
 }}

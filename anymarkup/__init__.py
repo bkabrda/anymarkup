@@ -35,13 +35,16 @@ class AnyMarkupError(Exception):
         return 'AnyMarkupError: {0}'.format(cause)
 
 
-def parse(inp, format=None, encoding='utf-8'):
+def parse(inp, format=None, encoding='utf-8', force_types=True):
     """Parse input from file-like object, unicode string or byte string.
 
     Args:
         inp: file-like object, unicode string or byte string with the markup
         format: explicitly override the guessed `inp` markup format
         encoding: `inp` encoding, defaults to utf-8
+        force_types: if `True`, integers, floats, booleans and none/null
+            are recognized and returned as proper types instead of strings;
+            if `False`, everything is converted to strings
     Returns:
         parsed input (dict or list) containing unicode values
     Raises:
@@ -64,7 +67,7 @@ def parse(inp, format=None, encoding='utf-8'):
     proper_inp = six.BytesIO(proper_inp)
 
     try:
-        res = _do_parse(proper_inp, fmt, encoding)
+        res = _do_parse(proper_inp, fmt, encoding, force_types)
     except Exception as e:
         # I wish there was only Python 3 and I could just use "raise ... from e"
         raise AnyMarkupError(e)
@@ -74,13 +77,16 @@ def parse(inp, format=None, encoding='utf-8'):
     return res
 
 
-def parse_file(path, format=None, encoding='utf-8'):
+def parse_file(path, format=None, encoding='utf-8', force_types=True):
     """A convenience wrapper of parse, which accepts path of file to parse.
 
     Args:
         path: path to file to parse
         format: explicitly override the guessed `inp` markup format
         encoding: file encoding, defaults to utf-8
+        force_types: if `True`, integers, floats, booleans and none/null
+            are recognized and returned as proper types instead of strings;
+            if `False`, everything is converted to strings
     Returns:
         parsed `inp` (dict or list) containing unicode values
     Raises:
@@ -150,13 +156,15 @@ def serialize_file(struct, path, format=None, encoding='utf-8'):
         raise AnyMarkupError(e)
 
 
-def _do_parse(inp, fmt, encoding):
+def _do_parse(inp, fmt, encoding, force_types):
     """Actually parse input.
 
     Args:
         inp: bytes yielding file-like object
         fmt: format to use for parsing
         encoding: encoding of `inp`
+        force_types: if `True`, try to recognize basic types,
+            else convert everything to strings
     Returns:
         parsed `inp` (dict or list) containing unicode values
     Raises:
@@ -166,10 +174,7 @@ def _do_parse(inp, fmt, encoding):
 
     if fmt == 'ini':
         cfg = configobj.ConfigObj(inp, encoding=encoding)
-        # workaround https://github.com/DiffSK/configobj/issues/18#issuecomment-76391689
         res = cfg.dict()
-        if six.PY2:
-            res = _ensure_unicode_recursive(res, encoding)
     elif fmt == 'json':
         if six.PY3:
             # python 3 json only reads from unicode objects
@@ -181,12 +186,13 @@ def _do_parse(inp, fmt, encoding):
         # guesses encoding by its own, there seems to be no way to pass
         #  it explicitly
         res = yaml.safe_load(inp)
-        if six.PY2:
-            res = _ensure_unicode_recursive(res, encoding)
     else:
         raise  # unknown format
 
-    return res
+    # make sure it's all unicode and all int/float values were parsed correctly
+    #   the unicode part is here because of yaml on PY2 and also as workaround for
+    #   https://github.com/DiffSK/configobj/issues/18#issuecomment-76391689
+    return _ensure_proper_types(res, encoding, force_types)
 
 
 def _do_serialize(struct, fmt, encoding):
@@ -225,13 +231,15 @@ def _do_serialize(struct, fmt, encoding):
     return res
 
 
-def _ensure_unicode_recursive(struct, encoding):
+def _ensure_proper_types(struct, encoding, force_types):
     """A convenience function that recursively makes sure all the strings
     in the structure are decoded unicode. It decodes them if not.
 
     Args:
         struct: a structure to check and fix
         encoding: encoding to use on found bytestrings
+        force_types: if `True`, try to recognize basic types,
+            else convert everything to strings
     Returns:
         a fully decoded copy of given structure
     """
@@ -240,21 +248,49 @@ def _ensure_unicode_recursive(struct, encoding):
     if isinstance(struct, (dict, collections.OrderedDict)):
         res = type(struct)()
         for k, v in struct.items():
-            res[_ensure_unicode_recursive(k, encoding)] = \
-                _ensure_unicode_recursive(v, encoding)
+            res[_ensure_proper_types(k, encoding, force_types)] = \
+                _ensure_proper_types(v, encoding, force_types)
     elif isinstance(struct, list):
         res = []
         for i in struct:
-            res.append(_ensure_unicode_recursive(i, encoding))
+            res.append(_ensure_proper_types(i, encoding, force_types))
     elif isinstance(struct, six.binary_type):
         res = struct.decode(encoding)
-    elif isinstance(struct, (six.text_type, type(None), type(True))):
+    elif isinstance(struct, (six.text_type, type(None), type(True), six.integer_types, float)):
         res = struct
     else:
         raise AnyMarkupError('internal error - unexpected type {0} in parsed markup'.
             format(type(struct)))
 
+    if force_types and isinstance(res, six.text_type):
+        res = _recognize_basic_types(res)
+    elif not (force_types or \
+            isinstance(res, (dict, collections.OrderedDict, list, six.text_type))):
+        res = six.text_type(res)
+
     return res
+
+
+def _recognize_basic_types(s):
+    """If value of given string `s` is an integer (or long), float or boolean, convert it
+    to a proper type and return it.
+    """
+    tps = [int, float]
+    if six.PY2:
+        tps.append(long)
+    for tp in tps:
+        try:
+            return tp(s)
+        except ValueError:
+            pass
+    if s.lower() == 'true':
+        return True
+    if s.lower() == 'false':
+        return False
+    if s.lower() in ['none', 'null']:
+        return None
+
+    return s
 
 
 def _get_format(format, fname, inp=None):

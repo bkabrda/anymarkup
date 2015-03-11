@@ -21,6 +21,20 @@ from https://pypi.python.org/pypi/anymarkup or install them via ``pip install an
 
 ``anymarkup`` works with Python 2.7 and >= 3.3.
 
+Notes on Parsing Basic Types
+----------------------------
+
+When parsing, `anymarkup` recognizes basic types - `NoneType`, `int`, `float` and `bool`
+(and `long` on Python 2) and converts all values to these types. If you want to get
+everything as strings, just use `force_types=False` with `parse` or `parse_file`::
+
+  import anymarkup
+  # will yield {'a': 1}
+  anymarkup.parse('a: 1')
+  # will yield {'a': '1'}
+  anymarkup.parse('a: 1', force_types=False)
+
+
 Notes on OrderedDict
 --------------------
 
@@ -69,6 +83,14 @@ Parsing examples::
 
   # explicitly specify a type of format to expect and/or encoding (utf-8 is default)
   anymarkup.parse('foo: bar', format='yaml', encoding='ascii')
+
+  # by default, anymarkup recognizes basic types (None, booleans, ints and floats)
+  #   if you want to get everything as strings, just use force_types=False
+
+  # will yield {'a': 1, 'b': True, 'c': None}
+  anymarkup.parse('a: 1\nb: True\nc: None')
+  # will yield {'a': '1', 'b': 'True', 'c': 'None'}
+  anymarkup.parse('a: 1\nb: True\nc: None', force_types=False)
 
   # or parse a file
   anymarkup.parse_file('foo.ini')

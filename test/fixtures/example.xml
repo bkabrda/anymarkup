@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <foo>
     <bar>ěšč</bar>
-    <spam>text2</spam>
+    <spam>1</spam>
+    <baz>1.1</baz>
     <blah>
-        <blahblah>text3</blahblah>
+        <blahblah>True</blahblah>
         <blahblah>text4</blahblah>
         <nothing/>
     </blah>
