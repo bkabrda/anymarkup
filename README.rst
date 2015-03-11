@@ -19,6 +19,7 @@ Serializing (coming soon in 0.2.0)::
 ``anymarkup`` is licensed under BSD license. You can download official releases
 from https://pypi.python.org/pypi/anymarkup or install them via ``pip install anymarkup``.
 
+``anymarkup`` works with Python 2.7 and >= 3.3.
 
 Notes on OrderedDict
 --------------------
