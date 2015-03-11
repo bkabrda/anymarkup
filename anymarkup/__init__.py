@@ -87,7 +87,8 @@ def parse_file(path, format=None, encoding='utf-8'):
         AnyMarkupError if a problem occurs while parsing
     """
     try:
-        return parse(open(path, 'rb'), format, encoding)
+        with open(path, 'rb') as f:
+            return parse(f, format, encoding)
     except EnvironmentError as e:
         raise AnyMarkupError(e)
 
@@ -143,7 +144,8 @@ def serialize_file(struct, path, format=None, encoding='utf-8'):
         AnyMarkupError if a problem occurs while serializing
     """
     try:
-        return serialize(struct, format, open(path, 'wb'), encoding)
+        with open(path, 'wb') as f:
+            return serialize(struct, format, f, encoding)
     except EnvironmentError as e:
         raise AnyMarkupError(e)
 
