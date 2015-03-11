@@ -17,6 +17,19 @@ Serializing (coming soon in 0.2.0)::
   anymarkup.serialize_file({'foo': 'bar'}, 'path/to/file.json')
 
 
+Notes on OrderedDict
+--------------------
+
+Parsing certain types of markup can yield Python's ``OrderedDict`` type - namely
+XML documents and YAML ``!!omap``. ``anymarkup`` handles this without a problem,
+but note that if you serialize these as JSON or INI and then parse again, you'll
+lose the ordering information (meaning you'll get just ``dict`` back).
+
+This is because JSON and INI parsers (to my knowledge) don't consider
+ordering key-value structures important and there's no direct means in these
+markup languages to express ordering key-value structures.
+
+
 Examples
 --------
 

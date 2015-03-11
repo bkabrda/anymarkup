@@ -29,26 +29,30 @@ class TestParse(object):
         ('', {}),
         ('{}', {}),
         ('[]', []),
-        (example_ini, example_ini_as_struct),
-        (example_json, example_as_struct),
-        (example_xml, example_as_struct),
-        (example_yaml, example_as_struct),
+        (example_ini, example_ini_as_dict),
+        (example_json, example_as_dict),
+        (example_xml, example_as_ordered_dict),
+        (example_yaml_map, example_as_dict),
+        (example_yaml_omap, example_as_ordered_dict),
     ])
     def test_parse_basic(self, str, expected):
         parsed = parse(str)
         assert parsed == expected
+        assert type(parsed) == type(expected)
         self.assert_unicode(parsed)
 
     @pytest.mark.parametrize('str, expected', [
         ('# comment', {}),
         ('# comment\n', {}),
-        ('# comment\n' + example_ini, example_ini_as_struct),
-        ('# comment\n' + example_json, example_as_struct),
-        ('# comment\n' + example_yaml, example_as_struct),
+        ('# comment\n' + example_ini, example_ini_as_dict),
+        ('# comment\n' + example_json, example_as_dict),
+        ('# comment\n' + example_yaml_map, example_as_dict),
+        ('# comment\n' + example_yaml_omap, example_as_ordered_dict),
     ])
     def test_parse_recognizes_comments_in_ini_json_yaml(self, str, expected):
         parsed = parse(str)
         assert parsed == expected
+        assert type(parsed) == type(expected)
         self.assert_unicode(parsed)
 
     def test_parse_works_with_bytes_yielding_file(self):
@@ -72,10 +76,10 @@ class TestParse(object):
         ('empty.json', AnyMarkupError),
         ('empty.xml', AnyMarkupError),
         ('empty.yaml', {}),
-        ('example.ini', example_ini_as_struct),
-        ('example.json', example_as_struct),
-        ('example.xml', example_as_struct),
-        ('example.yaml', example_as_struct),
+        ('example.ini', example_ini_as_dict),
+        ('example.json', example_as_dict),
+        ('example.xml', example_as_ordered_dict),
+        ('example.yaml', example_as_dict),
     ])
     def test_parse_file_basic(self, file, expected):
         f = os.path.join(self.fixtures, file)
@@ -89,7 +93,7 @@ class TestParse(object):
 
     def test_parse_file_noextension(self):
         parsed = parse_file(os.path.join(self.fixtures, 'without_extension'))
-        assert parsed == example_ini_as_struct
+        assert parsed == example_ini_as_dict
         self.assert_unicode(parsed)
 
     def test_parse_file_fails_on_bad_extension(self):

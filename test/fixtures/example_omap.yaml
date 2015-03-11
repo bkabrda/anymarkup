@@ -1,0 +1,9 @@
+!!omap
+- foo: !!omap
+  - bar: ěšč
+  - spam: text2
+  - blah: !!omap
+    - blahblah:
+      - text3
+      - text4
+    - nothing: null

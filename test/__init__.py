@@ -31,7 +31,7 @@ example_xml = u"""\
 </foo>"""
 
 
-example_yaml = u"""
+example_yaml_map = u"""\
 foo:
     bar: ěšč
     spam: text2
@@ -41,7 +41,22 @@ foo:
         - text4
         nothing:"""
 
-example_as_struct = OrderedDict(
+
+# for testing OrderedDict parsing/serializing with PyYAML
+# TODO: what about "nothing: null"? it's not there for normal map
+example_yaml_omap = u"""\
+!!omap
+- foo: !!omap
+  - bar: ěšč
+  - spam: text2
+  - blah: !!omap
+    - blahblah:
+      - text3
+      - text4
+    - nothing: null"""
+
+
+example_as_ordered_dict = OrderedDict(
     [(u'foo', OrderedDict([
         (u'bar', u'ěšč'),
         (u'spam', u'text2'),
@@ -51,6 +66,18 @@ example_as_struct = OrderedDict(
         ]))
     ]))]
 )
+
+
+example_as_dict = {
+    u'foo': {
+         u'bar': u'ěšč',
+         u'spam': u'text2',
+         u'blah': {
+             u'blahblah': [u'text3', u'text4'],
+             u'nothing': None
+         }
+    }
+}
 
 
 example_ini = u"""\
@@ -63,13 +90,13 @@ nothing = ""\
 """
 
 # there seems to be no way to represent "None" in inifile...
-example_ini_as_struct = OrderedDict(
-    [(u'foo', OrderedDict([
-        (u'bar', u'ěšč'),
-        (u'spam', u'text2'),
-        (u'blah', OrderedDict([
-            (u'blahblah', [u'text3', u'text4']),
-            (u'nothing', u'')
-        ]))
-    ]))]
-)
+example_ini_as_dict = {
+    u'foo': {
+         u'bar': u'ěšč',
+         u'spam': u'text2',
+         u'blah': {
+             u'blahblah': [u'text3', u'text4'],
+             u'nothing': u''
+         }
+    }
+}

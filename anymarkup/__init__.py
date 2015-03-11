@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import collections
 import io
 import json
 import os
@@ -234,8 +235,8 @@ def _ensure_unicode_recursive(struct, encoding):
     """
     # if it's an empty value
     res = None
-    if isinstance(struct, dict):
-        res = {}
+    if isinstance(struct, (dict, collections.OrderedDict)):
+        res = type(struct)()
         for k, v in struct.items():
             res[_ensure_unicode_recursive(k, encoding)] = \
                 _ensure_unicode_recursive(v, encoding)
@@ -335,3 +336,33 @@ def _guess_fmt_from_bytes(inp):
                 fmt = 'yaml'
 
     return fmt
+
+
+# following code makes it possible to use OrderedDict with PyYAML
+# based on https://bitbucket.org/xi/pyyaml/issue/13
+def construct_ordereddict(loader, node):
+    try:
+        omap = loader.construct_yaml_omap(node)
+        return collections.OrderedDict(*omap)
+    except yaml.constructor.ConstructorError:
+        return loader.construct_yaml_seq(node)
+
+
+def represent_ordereddict(dumper, data):
+    # NOTE: For block style this uses the compact omap notation, but for flow style
+    # it does not.
+    values = []
+    node = yaml.SequenceNode(u'tag:yaml.org,2002:omap', values, flow_style=False)
+    if dumper.alias_key is not None:
+        dumper.represented_objects[dumper.alias_key] = node
+    for key, value in data.items():
+        key_item = dumper.represent_data(key)
+        value_item = dumper.represent_data(value)
+        node_item = yaml.MappingNode(u'tag:yaml.org,2002:map', [(key_item, value_item)],
+                                     flow_style=False)
+        values.append(node_item)
+    return node
+
+
+yaml.SafeLoader.add_constructor(u'tag:yaml.org,2002:omap', construct_ordereddict)
+yaml.SafeDumper.add_representer(collections.OrderedDict, represent_ordereddict)
