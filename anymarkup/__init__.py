@@ -276,7 +276,7 @@ def _recognize_basic_types(s):
     to a proper type and return it.
     """
     tps = [int, float]
-    if six.PY2:
+    if not six.PY3:  # compat for older versions of six that don't have PY2
         tps.append(long)
     for tp in tps:
         try:
