@@ -42,9 +42,11 @@ def parse(inp, format=None, encoding='utf-8', force_types=True):
         inp: file-like object, unicode string or byte string with the markup
         format: explicitly override the guessed `inp` markup format
         encoding: `inp` encoding, defaults to utf-8
-        force_types: if `True`, integers, floats, booleans and none/null
-            are recognized and returned as proper types instead of strings;
+        force_types:
+            if `True`, integers, floats, booleans and none/null
+                are recognized and returned as proper types instead of strings;
             if `False`, everything is converted to strings
+            if `None`, backend return value is used
     Returns:
         parsed input (dict or list) containing unicode values
     Raises:
@@ -84,9 +86,11 @@ def parse_file(path, format=None, encoding='utf-8', force_types=True):
         path: path to file to parse
         format: explicitly override the guessed `inp` markup format
         encoding: file encoding, defaults to utf-8
-        force_types: if `True`, integers, floats, booleans and none/null
-            are recognized and returned as proper types instead of strings;
+        force_types:
+            if `True`, integers, floats, booleans and none/null
+                are recognized and returned as proper types instead of strings;
             if `False`, everything is converted to strings
+            if `None`, backend return value is used
     Returns:
         parsed `inp` (dict or list) containing unicode values
     Raises:
@@ -163,8 +167,11 @@ def _do_parse(inp, fmt, encoding, force_types):
         inp: bytes yielding file-like object
         fmt: format to use for parsing
         encoding: encoding of `inp`
-        force_types: if `True`, try to recognize basic types,
-            else convert everything to strings
+        force_types:
+            if `True`, integers, floats, booleans and none/null
+                are recognized and returned as proper types instead of strings;
+            if `False`, everything is converted to strings
+            if `None`, backend return value is used
     Returns:
         parsed `inp` (dict or list) containing unicode values
     Raises:
@@ -232,17 +239,23 @@ def _do_serialize(struct, fmt, encoding):
 
 
 def _ensure_proper_types(struct, encoding, force_types):
-    """A convenience function that recursively makes sure all the strings
-    in the structure are decoded unicode. It decodes them if not.
+    """A convenience function that recursively makes sure the given structure
+    contains proper types according to value of `force_types`.
 
     Args:
         struct: a structure to check and fix
         encoding: encoding to use on found bytestrings
-        force_types: if `True`, try to recognize basic types,
-            else convert everything to strings
+        force_types:
+            if `True`, integers, floats, booleans and none/null
+                are recognized and returned as proper types instead of strings;
+            if `False`, everything is converted to strings
+            if `None`, unmodified `struct` is returned
     Returns:
         a fully decoded copy of given structure
     """
+    if force_types is None:
+        return struct
+
     # if it's an empty value
     res = None
     if isinstance(struct, (dict, collections.OrderedDict)):

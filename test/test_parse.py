@@ -63,7 +63,7 @@ class TestParse(object):
         types_xml,
         types_yaml,
     ])
-    def test_parse_force_types(self, str):
+    def test_parse_force_types_true(self, str):
         assert parse(str) == types_as_struct_with_objects
 
     @pytest.mark.parametrize('str', [
@@ -72,8 +72,18 @@ class TestParse(object):
         types_xml,
         types_yaml,
     ])
-    def test_parse_force_strings(self, str):
+    def test_parse_force_types_false(self, str):
         assert parse(str, force_types=False) == types_as_struct_with_strings
+
+    @pytest.mark.parametrize('str, expected', [
+        # Note: the expected result is backend-specific
+        (types_ini, {'x': {'a': '1', 'b': '1.1', 'c': 'None', 'd': 'True'}}),
+        (types_json, {'x': {'a': 1, 'b': 1.1, 'c': None, 'd': True}}),
+        (types_xml, {'x': {'a': '1', 'b': '1.1', 'c': 'None', 'd': 'True'}}),
+        (types_yaml, {'x': {'a': 1, 'b': 1.1, 'c': 'None', 'd': True}}),
+    ])
+    def test_parse_force_types_none(self, str, expected):
+        assert parse(str, force_types=None) == expected
 
     def test_parse_works_with_bytes_yielding_file(self):
         f = open(os.path.join(self.fixtures, 'empty.ini'), 'rb')
