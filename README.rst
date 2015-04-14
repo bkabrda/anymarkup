@@ -6,15 +6,29 @@ Report bugs and new functionality requests at https://github.com/bkabrda/anymark
 
 Parsing::
 
-  import anymarkup
-  anymarkup.parse('foo: bar')
-  anymarkup.parse_file('foo/bar.ini')
+  >>> import anymarkup
+  >>> anymarkup.parse('foo: bar')
+  {'foo': 'bar'}
+  >>> anymarkup.parse_file('foo/bar.ini')
+  {'section': {'subsection': {'opt2': 'bar'}, 'opt1': 'foo'}}
+
+  $ cat foo/bar.ini
+  [section]
+  opt1=foo
+  [[subsection]]
+  opt2=bar
 
 Serializing::
 
-  import anymarkup
-  anymarkup.serialize({'foo': 'bar'}, 'json')
-  anymarkup.serialize_file({'foo': 'bar'}, 'path/to/file.json')
+  >>> import anymarkup
+  >>> anymarkup.serialize({'foo': 'bar'}, 'json')
+  b'{\n  "foo": "bar"\n}'
+  >>> anymarkup.serialize_file({'foo': 'bar'}, 'foo/bar.json')
+
+  $ cat foo/bar.json
+  {
+    "foo": "bar"
+  }
 
 ``anymarkup`` is licensed under BSD license. You can download official releases
 from https://pypi.python.org/pypi/anymarkup or install them via ``pip install anymarkup``.
@@ -24,16 +38,28 @@ from https://pypi.python.org/pypi/anymarkup or install them via ``pip install an
 Notes on Parsing Basic Types
 ----------------------------
 
-When parsing, `anymarkup` recognizes basic types - `NoneType`, `int`, `float` and `bool`
-(and `long` on Python 2) and converts all values to these types. If you want to get
-everything as strings, just use `force_types=False` with `parse` or `parse_file`::
+When parsing, ``anymarkup`` recognizes basic types - ``NoneType``, ``int``, ``float`` and ``bool``
+(and ``long`` on Python 2) and converts all values to these types. If you want to get
+everything as strings, just use ``force_types=False`` with ``parse`` or ``parse_file``. Finally,
+you can also use ``force_types=None`` to get whatever the parsing backend returned::
 
-  import anymarkup
-  # will yield {'a': 1}
-  anymarkup.parse('a: 1')
-  # will yield {'a': '1'}
-  anymarkup.parse('a: 1', force_types=False)
+  >>> anymarkup.parse('a: 1')
+  {'a': 1}
+  >>> anymarkup.parse('a: 1', force_types=False)
+  {'a': '1'}
+  >>> anymarkup.parse('a: 1', force_types=None)
+  {'a': 1}
 
+
+Backends
+--------
+
+``anymarkup`` uses:
+
+- https://pypi.python.org/pypi/configobj/ for ``ini`` parsing
+- https://docs.python.org/library/json.html for ``json`` parsing
+- https://pypi.python.org/pypi/xmltodict for ``xml`` parsing
+- https://pypi.python.org/pypi/PyYAML for ``yaml`` parsing
 
 Notes on OrderedDict
 --------------------
@@ -53,8 +79,6 @@ Examples
 --------
 
 Parsing examples::
-
-  import anymarkup
 
   ini = """
   [a]
@@ -103,8 +127,6 @@ Parsing examples::
 
 
 Serializing examples::
-
-  import anymarkup
 
   struct = {'a': ['b', 'c']}
 
