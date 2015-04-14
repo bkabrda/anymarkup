@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='anymarkup',
-    version='0.3.1',
+    version='0.4.0',
     description='Parse/serialize any markup format',
     long_description=''.join(open('README.rst').readlines()),
     keywords='xml, yaml, json, ini',
@@ -16,7 +16,7 @@ setup(
     packages=['anymarkup'],
     install_requires=open('requirements.txt').read().splitlines(),
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: POSIX :: Linux',
