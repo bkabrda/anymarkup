@@ -98,7 +98,7 @@ def parse_file(path, format=None, encoding='utf-8', force_types=True):
     """
     try:
         with open(path, 'rb') as f:
-            return parse(f, format, encoding)
+            return parse(f, format, encoding, force_types)
     except EnvironmentError as e:
         raise AnyMarkupError(e)
 

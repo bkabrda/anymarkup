@@ -129,3 +129,12 @@ class TestParse(object):
     def test_parse_file_fails_on_bad_extension(self):
         with pytest.raises(AnyMarkupError):
             parse_file(os.path.join(self.fixtures, 'bad_extension.xml'))
+
+    def test_parse_file_respects_force_types(self):
+        f = os.path.join(self.fixtures, 'types.json')
+        parsed = parse_file(f, force_types=True)
+        assert parsed == {'a': 1, 'b': 1}
+        parsed = parse_file(f, force_types=False)
+        assert parsed == {'a': '1', 'b': '1'}
+        parsed = parse_file(f, force_types=None)
+        assert parsed == {'a': 1, 'b': '1'}
