@@ -27,7 +27,7 @@ class TestParse(object):
         else:
             raise AssertionError('Unexpected type {0} in parsed structure'.format(type(struct)))
 
-    @pytest.mark.parametrize('str, expected', [
+    @pytest.mark.parametrize(('str', 'expected'), [
         ('', {}),
         ('{}', {}),
         ('[]', []),
@@ -43,7 +43,7 @@ class TestParse(object):
         assert type(parsed) == type(expected)
         self.assert_unicode(parsed)
 
-    @pytest.mark.parametrize('str, expected', [
+    @pytest.mark.parametrize(('str', 'expected'), [
         ('# comment', {}),
         ('# comment\n', {}),
         ('# comment\n' + example_ini, example_as_dict),
@@ -75,7 +75,7 @@ class TestParse(object):
     def test_parse_force_types_false(self, str):
         assert parse(str, force_types=False) == types_as_struct_with_strings
 
-    @pytest.mark.parametrize('str, expected', [
+    @pytest.mark.parametrize(('str', 'expected'), [
         # Note: the expected result is backend-specific
         (types_ini, {'x': {'a': '1', 'b': '1.1', 'c': 'None', 'd': 'True'}}),
         (types_json, {'x': {'a': 1, 'b': 1.1, 'c': None, 'd': True}}),
@@ -100,7 +100,7 @@ class TestParse(object):
         with pytest.raises(AnyMarkupError):
             parse('foo: bar', format='xml')
 
-    @pytest.mark.parametrize('file, expected', [
+    @pytest.mark.parametrize(('file', 'expected'), [
         # TODO: some parsers allow empty files, others don't - this should be made consistent
         ('empty.ini', {}),
         ('empty.json', AnyMarkupError),

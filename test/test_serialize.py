@@ -27,7 +27,7 @@ class TestSerialize(object):
             file.seek(0)
         return file.read().decode('utf-8')
 
-    @pytest.mark.parametrize('struct, format', [
+    @pytest.mark.parametrize(('struct', 'format'), [
         (example_as_dict, 'ini'),
         (example_as_dict, 'json'),
         (example_as_ordered_dict, 'xml'),
@@ -53,7 +53,7 @@ class TestSerialize(object):
         with pytest.raises(AnyMarkupError):
             serialize(example_as_dict, 'json', fhandle)
 
-    @pytest.mark.parametrize('struct, fname', [
+    @pytest.mark.parametrize(('struct', 'fname'), [
         (example_as_dict, 'example.ini'),
         (example_as_dict, 'example.json'),
         (example_as_ordered_dict, 'example.xml'),
