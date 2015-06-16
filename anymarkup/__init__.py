@@ -12,7 +12,7 @@ import yaml
 
 
 __all__ = ['AnyMarkupError', 'parse', 'parse_file', 'serialize', 'serialize_file']
-__version__ = '0.4.2'
+__version__ = '0.4.3'
 
 
 fmt_to_exts = {'ini': ['ini'], 'json': ['json'], 'xml': ['xml'], 'yaml': ['yaml', 'yml']}
