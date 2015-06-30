@@ -1,6 +1,18 @@
 anymarkup
 =========
 
+.. image:: https://travis-ci.org/bkabrda/anymarkup.svg?branch=master
+   :target: https://travis-ci.org/bkabrda/anymarkup
+   :alt: Build Status
+
+.. image:: https://landscape.io/github/bkabrda/anymarkup/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/bkabrda/anymarkup/master
+   :alt: Code Health
+
+.. image:: https://coveralls.io/repos/bkabrda/anymarkup/badge.svg?branch=master
+   :target: https://coveralls.io/r/bkabrda/anymarkup?branch=master
+   :alt: Coverage
+
 Parse or serialize any markup. Currently supports ini, json, xml and yaml.
 Report bugs and new functionality requests at https://github.com/bkabrda/anymarkup/issues.
 
