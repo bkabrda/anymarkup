@@ -8,7 +8,7 @@ python:
 
 install:
 - pip install -r requirements-devel.txt
-- pip install coveralls
+- pip install coveralls pytest-cov
 
 script:
 - py.test test --cov anymarkup
