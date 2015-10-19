@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='anymarkup',
-    version='0.4.3',
+    version='0.5.0',
     description='Parse/serialize any markup format',
     long_description=''.join(open('README.rst').readlines()),
     keywords='xml, yaml, json, ini',

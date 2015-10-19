@@ -2,4 +2,3 @@ include README.rst
 include LICENSE
 include requirements.txt
 recursive-include test *.py
-recursive-include test/fixtures *

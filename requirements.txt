@@ -1,4 +1,4 @@
+anymarkup-core
 configobj
 PyYAML
-six
 xmltodict

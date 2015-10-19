@@ -87,6 +87,24 @@ ordering key-value structures important and there's no direct means in these
 markup languages to express ordering key-value structures.
 
 
+Notes on Dependencies
+---------------------
+
+Read this section if you want anymarkup functionality only for subset of supported
+markup languages without the need to install all parsers.
+
+Since version 0.5.0, anymarkup is just a wrapper library around anymarkup-core
+(https://github.com/bkabrda/anymarkup-core) and doesn't actually contain any code,
+except of imports from anymarkup-core.
+
+anymarkup-core goal is to not explicitly depend on any of the parsers, so people
+can install it with only a specified subset of dependencies. For example, you can
+install anymarkup-core only with PyYAML, if you know you'll only be parsing YAML.
+
+If you install anymarkup, you will always get a full set of dependencies
+and you will be able to parse any markup language that's supported.
+
+
 Examples
 --------
 
