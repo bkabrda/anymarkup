@@ -13,7 +13,7 @@ anymarkup
    :target: https://coveralls.io/r/bkabrda/anymarkup?branch=master
    :alt: Coverage
 
-Parse or serialize any markup. Currently supports ini, json, xml and yaml.
+Parse or serialize any markup. Currently supports ini, json, toml, xml and yaml.
 Report bugs and new functionality requests at https://github.com/bkabrda/anymarkup/issues.
 
 Parsing::
@@ -47,6 +47,20 @@ from https://pypi.python.org/pypi/anymarkup or install them via ``pip install an
 
 ``anymarkup`` works with Python 2.7 and >= 3.3.
 
+Automatic Markup Language Recognition
+-------------------------------------
+
+When using ``anymarkup.parse(input)``, anymarkup will try to guess markup language of input.
+This usually works fine, the only issue is ini vs toml. These two look almost the same and
+in fact have common subset (which, however, yields different parsing result). Because of this,
+anything with an ini-like look will be parsed with ini parser. If you want an input string
+to be parsed as toml, you have to explicitly specify that using ``format=toml`` (see below
+for examples).
+
+When using ``anymarkup.parse_file(path)``, anymarkup will try to guess format based on file
+extension and then fallback to guessing as explained above. This means that if the file has
+``.toml`` extension, you don't have to provide ``format=toml`` explicitly.
+
 Notes on Parsing Basic Types
 ----------------------------
 
@@ -70,6 +84,7 @@ Backends
 
 - https://pypi.python.org/pypi/configobj/ for ``ini`` parsing
 - https://docs.python.org/library/json.html for ``json`` parsing
+- https://pypi.python.org/pypi/toml/ for ``toml`` parsing
 - https://pypi.python.org/pypi/xmltodict for ``xml`` parsing
 - https://pypi.python.org/pypi/PyYAML for ``yaml`` parsing
 
