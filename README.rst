@@ -13,7 +13,7 @@ anymarkup
    :target: https://coveralls.io/r/bkabrda/anymarkup?branch=master
    :alt: Coverage
 
-Parse or serialize any markup. Currently supports ini, json, toml, xml and yaml.
+Parse or serialize any markup. Currently supports ini, json, json5, toml, xml and yaml.
 Report bugs and new functionality requests at https://github.com/bkabrda/anymarkup/issues.
 
 Parsing::
@@ -51,15 +51,18 @@ Automatic Markup Language Recognition
 -------------------------------------
 
 When using ``anymarkup.parse(input)``, anymarkup will try to guess markup language of input.
-This usually works fine, the only issue is ini vs toml. These two look almost the same and
-in fact have common subset (which, however, yields different parsing result). Because of this,
-anything with an ini-like look will be parsed with ini parser. If you want an input string
-to be parsed as toml, you have to explicitly specify that using ``format=toml`` (see below
-for examples).
+This usually works fine except:
+* ini vs toml: These two look almost the same and in fact have common subset (which,
+  however, yields different parsing result). Because of this, anything with an ini-like
+  look will be parsed with ini parser. If you want an input string to be parsed as toml,
+  you have to explicitly specify that using ``format=toml`` (see below for examples).
+* json vs json5: json5 is superset of json, but not very widely used. Because of practicality
+  of json usage, everything that looks like json is parsed as json. If you want input string
+  to be parsed as json5, you have to explicitly specify that using ``format=json5``.
 
 When using ``anymarkup.parse_file(path)``, anymarkup will try to guess format based on file
 extension and then fallback to guessing as explained above. This means that if the file has
-``.toml`` extension, you don't have to provide ``format=toml`` explicitly.
+``.toml`` pr ``.json5`` extension, you don't have to provide ``format=<format>`` explicitly.
 
 Notes on Parsing Basic Types
 ----------------------------
