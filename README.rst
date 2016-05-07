@@ -52,6 +52,7 @@ Automatic Markup Language Recognition
 
 When using ``anymarkup.parse(input)``, anymarkup will try to guess markup language of input.
 This usually works fine except:
+
 * ini vs toml: These two look almost the same and in fact have common subset (which,
   however, yields different parsing result). Because of this, anything with an ini-like
   look will be parsed with ini parser. If you want an input string to be parsed as toml,
