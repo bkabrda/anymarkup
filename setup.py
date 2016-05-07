@@ -8,7 +8,7 @@ setup(
     version='0.6.0',
     description='Parse/serialize any markup format',
     long_description=''.join(open('README.rst').readlines()),
-    keywords='xml, yaml, json, ini',
+    keywords='xml, yaml, toml, json, ini',
     author='Slavek Kabrda',
     author_email='slavek.kabrda@gmail.com',
     url='https://github.com/bkabrda/anymarkup',
