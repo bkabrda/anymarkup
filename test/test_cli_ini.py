@@ -3,7 +3,7 @@ from anymarkup.cli import cli
 from click.testing import CliRunner
 import pytest
 
-from .data import *
+from .data import TEST_DATA_INI
 
 
 @pytest.fixture(scope="class")
@@ -13,44 +13,31 @@ def runner():
 
 # Testing conversion from INI
 class TestConversionFromIni():
-    def test_convert_ini_no_format_options(self, runner):
-        result = runner.invoke(cli, ['convert'], input=TEST_DATA_INI)
-        assert result.exit_code == 0
-        assert not result.exception
-        assert str(result.output) == TEST_DATA_JSON
+    def test_convert_no_error(self, runner):
+        arguments = [
+            ['convert'],
+            ['convert', '--from-format', 'ini'],
+            ['convert', '--from-format', 'ini', '--to-format', 'ini'],
+            ['convert', '--from-format', 'ini', '--to-format', 'json'],
+            ['convert', '--from-format', 'ini', '--to-format', 'json5'],
+            ['convert', '--from-format', 'ini', '--to-format', 'toml'],
+            ['convert', '--from-format', 'ini', '--to-format', 'xml'],
+            ['convert', '--from-format', 'ini', '--to-format', 'yaml']
+        ]
+        for args in arguments:
+            result = runner.invoke(cli, args, input=TEST_DATA_INI)
+            assert result.exit_code == 0
+            assert not result.exception
 
-    def test_convert_ini_to_ini(self, runner):
-        result = runner.invoke(cli, ['convert', '--from-format', 'ini', '--to-format', 'ini'], input=TEST_DATA_INI)
-        assert result.exit_code == 0
-        assert not result.exception
-        assert str(result.output) == TEST_DATA_INI
-
-    def test_convert_ini_to_json(self, runner):
-        result = runner.invoke(cli, ['convert', '--from-format', 'ini', '--to-format', 'json'], input=TEST_DATA_INI)
-        assert result.exit_code == 0
-        assert not result.exception
-        assert str(result.output) == TEST_DATA_JSON
-
-    def test_convert_ini_to_json5(self, runner):
-        result = runner.invoke(cli, ['convert', '--from-format', 'ini', '--to-format', 'json5'], input=TEST_DATA_INI)
-        assert result.exit_code == 0
-        assert not result.exception
-        assert str(result.output) == TEST_DATA_JSON5
-
-    def test_convert_ini_to_toml(self, runner):
-        result = runner.invoke(cli, ['convert', '--from-format', 'ini', '--to-format', 'toml'], input=TEST_DATA_INI)
-        assert result.exit_code == 0
-        assert not result.exception
-        assert str(result.output) == TEST_DATA_TOML_WITHOUT_EMPTY
-
-    def test_convert_ini_to_xml(self, runner):
-        result = runner.invoke(cli, ['convert', '--from-format', 'ini', '--to-format', 'xml'], input=TEST_DATA_INI)
-        assert result.exit_code == 0
-        assert not result.exception
-        assert str(result.output) == TEST_DATA_XML
-
-    def test_convert_ini_to_yaml(self, runner):
-        result = runner.invoke(cli, ['convert', '--from-format', 'ini', '--to-format', 'yaml'], input=TEST_DATA_INI)
-        assert result.exit_code == 0
-        assert not result.exception
-        assert str(result.output).strip() == TEST_DATA_YAML_SORTED
+    def test_wrong_input_format(self, runner):
+        arguments = [
+            ['convert', '--from-format', 'json'],
+            ['convert', '--from-format', 'json5'],
+            ['convert', '--from-format', 'toml'],
+            ['convert', '--from-format', 'xml'],
+            ['convert', '--from-format', 'yaml'],
+        ]
+        for args in arguments:
+            result = runner.invoke(cli, args, input=TEST_DATA_INI)
+            assert result.exit_code != 0
+            assert result.exception
