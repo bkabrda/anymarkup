@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name='anymarkup',
-    version='0.7.0',
+    version='0.8.0',
     description='Parse/serialize any markup format',
     long_description=''.join(open('README.rst').readlines()),
     keywords='xml, yaml, toml, json, json5, ini',
@@ -15,6 +15,11 @@ setup(
     license='BSD',
     packages=['anymarkup'],
     install_requires=open('requirements.txt').read().splitlines(),
+    entry_points={
+        'console_scripts': [
+            'anymarkup = anymarkup.cli:cli'
+        ]
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

@@ -81,6 +81,22 @@ you can also use ``force_types=None`` to get whatever the parsing backend return
   {'a': 1}
 
 
+CLI
+--------
+To install the CLI, run the following command:
+
+  pip install anymarkup
+
+Example of conversion from JSON to XML:
+
+  anymarkup convert --from-format json --to-format xml <somefile.json
+
+For full help on the CLI run the following commands:
+
+  anymarkup --help
+  anymarkup convert --help
+
+
 Backends
 --------
 
@@ -123,6 +139,7 @@ install anymarkup-core only with PyYAML, if you know you'll only be parsing YAML
 If you install anymarkup, you will always get a full set of dependencies
 and you will be able to parse any markup language that's supported.
 
+The CLI requires click as indicated in the requirements.txt file.
 
 Examples
 --------

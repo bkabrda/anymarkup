@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import anymarkup, anymarkup_core
+
 
 def test_imports():
     for i in ['AnyMarkupError', 'parse', 'parse_file', 'serialize', 'serialize_file']:
