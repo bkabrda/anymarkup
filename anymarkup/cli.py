@@ -21,11 +21,12 @@ def cli():
               help='Input file format, if not specified, an educated guess will be made')
 @click.option('-t', '--to-format', type=click.Choice(['ini', 'json', 'json5', 'toml', 'yaml', 'xml']), default='json',
               help='Output format to serialize to, the default is JSON')
-def convert(filename, from_format, to_format):
+@click.option('--interpolate/--no-interpolate', default=True)
+def convert(filename, from_format, to_format, interpolate):
     """Parses stdin or a file and converts to the specified format"""
 
     # Try to parse the file and output in the specified format
-    data = anymarkup.parse(filename, format=from_format)
+    data = anymarkup.parse(filename, format=from_format, interpolate=interpolate)
     serialized = anymarkup.serialize(data, format=to_format)
     click.echo(serialized)
 
