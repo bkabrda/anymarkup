@@ -1,4 +1,4 @@
-anymarkup-core>=0.7.0
+anymarkup-core>=0.8.0
 click>=7.0
 configobj
 json5

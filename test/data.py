@@ -10,6 +10,17 @@ float = 2.1
 empty = None
 """
 
+
+TEST_DATA_INI_INTERPOLATION="""\
+[section]
+string = foobar [%%(test)s]
+number = 1
+boolean = False
+float = 2.1
+empty = None
+"""
+
+
 TEST_DATA_JSON = """\
 {
   "section": {
